@@ -86,7 +86,7 @@ can include line breaks.` // same string type
     // Output of course counts as using a variable.
     fmt.Println(s, c, a4, s3, d2, m, bs)
 
-    //learnFlowControl() // back in the flow
+    learnFlowControl() // back in the flow
 }
 func learnMemory() (p, q *int) {
     // Named return values p and q have type pointer to int.
@@ -96,4 +96,57 @@ func learnMemory() (p, q *int) {
     s[3] = 7             // assign one of them
     r := -2              // declare another local variable
     return &s[3], &r     // & takes the address of an object.
+}
+func expensiveComputation() int {
+    return 1e6
+}
+func learnFlowControl() {
+    // If statements require brace brackets, and do not require parens.
+    if true {
+        fmt.Println("told ya")
+    }
+    // Formatting is standardized by the command line command "go fmt."
+    if false {
+        // pout
+    } else {
+        // gloat
+    }
+    // Use switch in preference to chained if statements.
+    x := 1
+    switch x {
+    case 0:
+    case 1:
+        // cases don't "fall through"
+    case 2:
+        // unreached
+    }
+    // Like if, for doesn't use parens either.
+    for x := 0; x < 3; x++ { // ++ is a statement
+        fmt.Println("iteration", x)
+    }
+    // x == 1 here.
+
+    // For is the only loop statement in Go, but it has alternate forms.
+    for { // infinite loop
+        break    // just kidding
+        continue // unreached
+    }
+    // As with for, := in an if statement means to declare and assign y first,
+    // then test y > x.
+    if y := expensiveComputation(); y > x {
+        x = y
+    }
+    // Function literals are closures.
+    xBig := func() bool {
+        return x > 100 // references x declared above switch statement.
+    }
+    fmt.Println("xBig:", xBig()) // true (we last assigned 1e6 to x)
+    x /= 1e5                     // this makes it == 10
+    fmt.Println("xBig:", xBig()) // false now
+
+    // When you need it, you'll love it.
+    goto love
+love:
+
+    //learnInterfaces() // Good stuff coming up!
 }
