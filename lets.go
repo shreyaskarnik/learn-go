@@ -9,7 +9,7 @@ package main
 // Import declaration declares library packages referenced in this file.
 import (
     "fmt"      // A package in the Go standard library
-    //"net/http" // Yes, a web server!
+    "net/http" // Yes, a web server!
     "strconv"  // String conversions
 )
 
@@ -198,5 +198,59 @@ func learnErrorHandling() {
         fmt.Println(err)
     }
     // We'll revisit interfaces a little later.  Meanwhile,
-    //learnConcurrency()
+    learnConcurrency()
+}
+// c is a channel, a concurrency-safe communication object.
+func inc(i int, c chan int) {
+    c <- i + 1 // <- is the "send" operator when a channel appears on the left.
+}
+
+// We'll use inc to increment some numbers concurrently.
+func learnConcurrency() {
+    // Same make function used earlier to make a slice.  Make allocates and
+    // initializes slices, maps, and channels.
+    c := make(chan int)
+    // Start three concurrent goroutines.  Numbers will be incremented
+    // concurrently, perhaps in parallel if the machine is capable and
+    // properly configured.  All three send to the same channel.
+    go inc(0, c) // go is a statement that starts a new goroutine.
+    go inc(10, c)
+    go inc(-805, c)
+    go inc(-80, c)
+    // Read three results from the channel and print , <-cthem out.
+    // There is no telling in what order the results will arrive!
+    fmt.Println(<-c, <-c, <-c, <-c) // channel on right, <- is "receive" operator.
+
+    cs := make(chan string)       // another channel, this one handles strings.
+    cc := make(chan chan string)  // a channel of channels.
+    go func() { c <- 84 }()       // start a new goroutine just to send a value
+    go func() { cs <- "wordy" }() // again, for cs this time
+    // Select has syntax like a switch statement but each case involves
+    // a channel operation.  It selects a case at random out of the cases
+    // that are ready to communicate.
+    select {
+    case i := <-c: // the value received can be assigned to a variable
+        fmt.Println("it's a", i)
+    case <-cs: // or the value received can be discarded
+        fmt.Println("it's a string")
+    case <-cc: // empty channel, not ready for communication.
+        fmt.Println("didn't happen.")
+    }
+    // At this point a value was taken from either c or cs.  One of the two
+    // goroutines started above has completed, the other will remain blocked.
+
+    learnWebProgramming() // Go does it.  You want to do it too.
+}
+// A single function from package http starts a web server.
+func learnWebProgramming() {
+    // ListenAndServe first parameter is TCP address to listen at.
+    // Second parameter is an interface, specifically http.Handler.
+    err := http.ListenAndServe(":8080", pair{})
+    fmt.Println(err) // don't ignore errors
+}
+
+// Make pair an http.Handler by implementing its only method, ServeHTTP.
+func (p pair) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    // Serve data with a method of http.ResponseWriter
+    w.Write([]byte("You learned Go in Y minutes!"))
 }
