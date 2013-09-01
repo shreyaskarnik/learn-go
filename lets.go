@@ -10,7 +10,7 @@ package main
 import (
     "fmt"      // A package in the Go standard library
     //"net/http" // Yes, a web server!
-    //"strconv"  // String conversions
+    "strconv"  // String conversions
 )
 
 // A function definition.  Main is special.  It is the entry point for the
@@ -182,5 +182,21 @@ func learnInterfaces() {
     fmt.Println(p) // output same as above. Println calls String method.
     fmt.Println(i) // output same as above
 
-    //learnErrorHandling()
+    learnErrorHandling()
+}
+func learnErrorHandling() {
+    // ", ok" idiom used to tell if something worked or not.
+    m := map[int]string{3: "three", 4: "four"}
+    if x, ok := m[1]; !ok { // ok will be false because 1 is not in the map.
+        fmt.Println("no one there")
+    } else {
+        fmt.Print(x) // x would be the value, if it were in the map.
+    }
+    // An error value communicates not just "ok" but more about the problem.
+    if _, err := strconv.Atoi("non-int"); err != nil { // _ discards value
+        // prints "strconv.ParseInt: parsing "non-int": invalid syntax"
+        fmt.Println(err)
+    }
+    // We'll revisit interfaces a little later.  Meanwhile,
+    //learnConcurrency()
 }
